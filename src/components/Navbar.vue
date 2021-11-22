@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-       <router-link to="/" class="nav-link">32Bit Store</router-link>
+      <router-link to="/" class="nav-link">32Bit Store</router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -22,6 +22,12 @@
             <router-link to="/busquedas" class="nav-link"
               >Búsquedas</router-link
             >
+          </li>
+          <li class="nav-item">
+            <router-link to="/ventas" class="nav-link">Ventas</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/total" class="nav-link">Total</router-link>
           </li>
         </ul>
       </div>
@@ -55,5 +61,4 @@ export default {
 .nav-link:active {
   color: white;
 }
-  
 </style>

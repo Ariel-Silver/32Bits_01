@@ -3,12 +3,17 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+const delay = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 const store = new Vuex.Store({
   state: {
     busqueda: "",
     productos: [
       {
-        codigo: "0001",
+        codigo: "1",
         nombre: "Sekiro",
         stock: 100,
         precio: 30000,
@@ -16,7 +21,7 @@ const store = new Vuex.Store({
         destacado: true,
       },
       {
-        codigo: "0002",
+        codigo: "2",
         nombre: "Fifa 21",
         stock: 100,
         precio: 25000,
@@ -24,7 +29,7 @@ const store = new Vuex.Store({
         destacado: false,
       },
       {
-        codigo: "0003",
+        codigo: "3",
         nombre: "Gears Of War 4",
         stock: 100,
         precio: 15000,
@@ -32,7 +37,7 @@ const store = new Vuex.Store({
         destacado: true,
       },
       {
-        codigo: "0004",
+        codigo: "4",
         nombre: "Mario Tennis Aces",
         stock: 100,
         precio: 35000,
@@ -40,7 +45,7 @@ const store = new Vuex.Store({
         destacado: false,
       },
       {
-        codigo: "0005",
+        codigo: "5",
         nombre: "Bloodborne",
         stock: 100,
         precio: 30000,
@@ -48,7 +53,7 @@ const store = new Vuex.Store({
         destacado: false,
       },
       {
-        codigo: "0006",
+        codigo: "6",
         nombre: "Forza Horizon 4",
         stock: 100,
         precio: 20000,
@@ -74,11 +79,31 @@ const store = new Vuex.Store({
         );
       }
     },
+    juegosConStock(state) {
+      return state.productos.filter((producto) => producto.stock > 0);
+    },
+    totalJuegosConStock(state) {
+      return state.productos.filter((producto) => producto.stock > 0).length;
+    },
+    montoTotalDeVentas(state) {
+      return state.ventas.reduce((accumulator, venta) => {
+        accumulator += venta.precio;
+        return accumulator;
+      }, 0);
+    },
   },
-
   mutations: {
     SET_BUSQUEDA(state, nuevaBusqueda) {
       state.busqueda = nuevaBusqueda;
+    },
+    RESTAR_STOCK(state, indiceJuego) {
+      state.productos[indiceJuego].stock -= 1;
+    },
+    AGREGAR_STOCK(state, indiceJuego) {
+      state.productos[indiceJuego].stock += 1;
+    },
+    AGREGAR_VENTA(state, venta) {
+      state.ventas.push(venta);
     },
   },
 
@@ -91,6 +116,25 @@ const store = new Vuex.Store({
           `nuevaBusqueda debiese de ser de tipo string y recibir un tipo ${typeof nuevaBusqueda}`
         );
       }
+    },
+    async venderJuego(context, producto) {
+      await context.dispatch("procesarLaVenta", producto);
+      await context.dispatch("registrarLaVenta", producto);
+    },
+    async procesarLaVenta(context, juegoAVender) {
+      await delay(2000);
+      const indiceJuego = context.state.productos.findIndex(
+        (producto) => producto.codigo === juegoAVender.codigo
+      );
+      if (context.state.productos[indiceJuego].stock > 0) {
+        context.commit("RESTAR_STOCK", indiceJuego);
+      }
+    },
+    async registrarLaVenta(context, producto) {
+      await delay(1000);
+      // eslint-disable-next-line no-unused-vars
+      const { stock, ...datosJuego } = producto;
+      context.commit("AGREGAR_VENTA", datosJuego);
     },
   },
 });
